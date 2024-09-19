@@ -1,47 +1,20 @@
 import urwid
+import re
 
 
 password = input()
 
 
-def proverka(password): 
-  score = 0
-  if is_very_long(password):
-   score += 2
-
-  if  has_digit(password):
-   score += 2
-
-  if has_letters(password):
-   score += 2
-
-  if has_lower_letters(password):
-   score += 2
-
-  if has_upper_letters(password):
-   score += 2
-
-  if has_symbols(password):
-   score += 2
-  return score
-
-
-
 def has_digit(password):
- for bukvitsa in password:
-  if bukvitsa.isdigit():
-   return any(bukvitsa for bukvitsa in password)
+   return any(bukvitsa.isdigit() for bukvitsa in password)
 
 
 def has_letters(password):
- for bukvitsa in password:
-  if bukvitsa.isalpha():
-   return any(bukvitsa for bukvitsa in password)
+   return any(bukvitsa.isalpha() for bukvitsa in password)
 
 
 def is_very_long(password):
-  if len(password) > 12:
-    return any(bukvitsa for bukvitsa in password)
+    return any(len(password) > 12 for bukvitsa in password)
 
 
 def has_upper_letters(password):
@@ -51,27 +24,35 @@ def has_upper_letters(password):
 
 
 def has_lower_letters(password):
- for bukvitsa in password:
-  if bukvitsa.islower():
-    return any(bukvitsa for bukvitsa in password)
+    return any(bukvitsa.isupper() for bukvitsa in password)
 
 
 def has_symbols(password):
-  for bukvitsa in password:
-      if bukvitsa in "@^%&*":
-       return any(bukvitsa for bukvitsa in password)
+    return bool(re.search(r"[@^%&*]", password))
 
-
-def on_ask_change(edit, new_edit_text):
-    score = proverka(new_edit_text)
-    reply.set_text(f"Оценка пароля: {score}")
-ask = urwid.Edit('Введите пароль: ', mask='*')
-reply = urwid.Text("")
-menu = urwid.Pile([ask, reply])
-menu = urwid.Filler(menu, valign='top')
-urwid.connect_signal(ask, 'change', on_ask_change)
-urwid.MainLoop(menu).run()
-
+def main():
+  def on_ask_change(edit, new_edit_text):
+      score = 0
+      criteria = [
+          lambda p: len(p) > 12,  # Очень длинный
+          lambda p: any(char.isdigit() for char in p),  # Содержит цифры
+          lambda p: any(char.isalpha() for char in p),  # Содержит буквы
+          lambda p: any(char.islower() for char in p),  # Содержит строчные буквы
+          lambda p: any(char.isupper() for char in p),  # Содержит заглавные буквы
+          lambda p: bool(re.search(r"[@^%&*]", p))  # Содержит специальные символы
+      ]
+      for criterion in criteria:
+          if criterion(new_edit_text):
+              score += 2
+      reply.set_text(f"Оценка пароля: {score}")
+  ask = urwid.Edit('Введите пароль: ', mask='*')
+  reply = urwid.Text("")
+  menu = urwid.Pile([ask, reply])
+  menu = urwid.Filler(menu, valign='top')
+  urwid.connect_signal(ask, 'change', on_ask_change)
+  urwid.MainLoop(menu).run()
+if __name__ == "__main__":
+  main()
 
 
 
