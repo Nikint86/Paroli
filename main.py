@@ -34,12 +34,12 @@ def main():
   def on_ask_change(edit, new_edit_text):
       score = 0
       criteria = [
-          lambda p: len(p) > 12,  # Очень длинный
-          lambda p: any(char.isdigit() for char in p),  # Содержит цифры
-          lambda p: any(char.isalpha() for char in p),  # Содержит буквы
-          lambda p: any(char.islower() for char in p),  # Содержит строчные буквы
-          lambda p: any(char.isupper() for char in p),  # Содержит заглавные буквы
-          lambda p: bool(re.search(r"[@^%&*]", p))  # Содержит специальные символы
+          lambda p: len(p) > 12,  
+          lambda p: any(char.isdigit() for char in p), 
+          lambda p: any(char.isalpha() for char in p),  
+          lambda p: any(char.islower() for char in p), 
+          lambda p: any(char.isupper() for char in p),  
+          lambda p: bool(re.search(r"[@^%&*]", p))  
       ]
       for criterion in criteria:
           if criterion(new_edit_text):
