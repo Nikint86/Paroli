@@ -1,58 +1,59 @@
 import urwid
-import re
 
 
-password = input()
+import re 
+
+
+MIN_LENGTH = 12
 
 
 def has_digit(password):
-   return any(bukvitsa.isdigit() for bukvitsa in password)
-
+    return any(char.isdigit() for char in password)
 
 def has_letters(password):
-   return any(bukvitsa.isalpha() for bukvitsa in password)
+    return any(char.isalpha() for char in password)
 
-
-def is_very_long(password):
-    return any(len(password) > 12 for bukvitsa in password)
-
+def is_long_enough(password):
+    return len(password) >= MIN_LENGTH
 
 def has_upper_letters(password):
- for bukvitsa in password:
-  if bukvitsa.isupper():
-   return any(bukvitsa for bukvitsa in password)
-
+    return any(char.isupper() for char in password)
 
 def has_lower_letters(password):
-    return any(bukvitsa.isupper() for bukvitsa in password)
+    return any(char.islower() for char in password)
+
+def validate_password(password):
+    special_chars = r'[^a-zA-Z0-9]' 
+    match = re.search(special_chars, password)
+    return bool(match) 
+
+def calculate_score(password):
+ score = 0
+ criteria = [
+    is_long_enough,
+    has_digit,
+    has_letters,
+    has_upper_letters,
+    has_lower_letters,
+    validate_password
+]
+ for criterion in criteria:
+  if criterion(password):
+    score += 2
+ return score
 
 
-def has_symbols(password):
-    return bool(re.search(r"[@^%&*]", password))
-
-def main():
-  def on_ask_change(edit, new_edit_text):
-      score = 0
-      criteria = [
-          lambda p: len(p) > 12,  
-          lambda p: any(char.isdigit() for char in p), 
-          lambda p: any(char.isalpha() for char in p),  
-          lambda p: any(char.islower() for char in p), 
-          lambda p: any(char.isupper() for char in p),  
-          lambda p: bool(re.search(r"[@^%&*]", p))  
-      ]
-      for criterion in criteria:
-          if criterion(new_edit_text):
-              score += 2
-      reply.set_text(f"Оценка пароля: {score}")
-  ask = urwid.Edit('Введите пароль: ', mask='*')
-  reply = urwid.Text("")
-  menu = urwid.Pile([ask, reply])
-  menu = urwid.Filler(menu, valign='top')
-  urwid.connect_signal(ask, 'change', on_ask_change)
-  urwid.MainLoop(menu).run()
-if __name__ == "__main__":
-  main()
+if __name__ == '__main__':
+ def on_ask_change(edit, new_edit_text):
+    score = calculate_score(new_edit_text)
+    reply.set_text(f"Оценка пароля: {score}")
+ask = urwid.Edit('Введите пароль: ', mask='*')
+reply = urwid.Text("")
+menu = urwid.Pile([ask, reply])
+menu = urwid.Filler(menu, valign='top')
+urwid.connect_signal(ask, 'change', on_ask_change)
+urwid.MainLoop(menu).run()
+main()
 
 
 
