@@ -1,9 +1,6 @@
 import urwid
 
 
-import re 
-
-
 MIN_LENGTH = 12
 
 
@@ -22,10 +19,8 @@ def has_upper_letters(password):
 def has_lower_letters(password):
     return any(char.islower() for char in password)
 
-def validate_password(password):
-    special_chars = r'[^a-zA-Z0-9]' 
-    match = re.search(special_chars, password)
-    return bool(match) 
+def has_symbols(password):
+    return any(not char.isalnum() for char in password)
 
 def calculate_score(password):
  score = 0
@@ -35,7 +30,7 @@ def calculate_score(password):
     has_letters,
     has_upper_letters,
     has_lower_letters,
-    validate_password
+    has_symbols
 ]
  for criterion in criteria:
   if criterion(password):
