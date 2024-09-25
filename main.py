@@ -29,19 +29,19 @@ def has_symbols(password):
 
 
 def calculate_score(password):
- score = 0
- criteria = [
-    is_long_enough,
-    has_digit,
-    has_letters,
-    has_upper_letters,
-    has_lower_letters,
-    has_symbols
-]
- for criterion in criteria:
-  if criterion(password):
-      score += 2
- return score
+    score = 0
+    criteria = [
+        is_long_enough,
+        has_digit,
+        has_letters,
+        has_upper_letters,
+        has_lower_letters,
+        has_symbols,
+    ]
+    for criterion in criteria:
+        if criterion(password):
+          score += 2
+    return score
 
 
 def on_ask_change(edit, new_edit_text):
